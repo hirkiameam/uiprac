@@ -31,7 +31,7 @@ steps:
 - task: AzureRmWebAppDeployment@4
   inputs:
     ConnectionType: 'AzureRM'
-    azureSubscription: 'azure sub1(2c72010b-c397-4a66-ab52-17109604ac81)'
+    azureSubscription: 'conn3'
     appType: 'webAppLinux'
     WebAppName: 'zipdeployIcontest'
     packageForLinux: '$(Build.ArtifactStagingDirectory)/**/*.zip'
