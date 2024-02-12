@@ -1,5 +1,10 @@
 <template>
   <div class="container">
+    <span>
+      <svg viewBox="0 0 24 24">
+        <path :d="icr" />
+      </svg>
+    </span>
     <div class="transparent" v-if="!setVisible" @click="setVisible = true">
     </div>
     <div class="rightside">
@@ -32,18 +37,23 @@
       </p>
     </div>
     <div class="searchbox">
-      <input @keydown="async (e) => {
-        if (e.key === 'Enter' && !e.isComposing) {
-          await navigateTo({
-            path: '/s/search',
-            query: {
-              w: input,
-              cat: selectedchip != 'all' ? selectedchip : undefined
-            }
-          })
-        }
-      }" v-model="input" type="search" class="search"
-        placeholder="input product code or search words then press enter">
+      <p class="magni">
+        <input @keydown="async (e) => {
+          if (e.key === 'Enter' && !e.isComposing) {
+            await navigateTo({
+              path: '/s/search',
+              query: {
+                w: input,
+                cat: selectedchip != 'all' ? selectedchip : undefined
+              }
+            })
+          }
+        }" v-model="input" type="search" class="search"
+          placeholder="input product code or search words then press enter">
+        <svg class="magnify" viewBox="0 0 24 24">
+          <path :d="mag" />
+        </svg>
+      </p>
     </div>
     <div class="functions">
       <div class="func">
@@ -62,6 +72,21 @@
         </div>
       </div>
     </div>
+    <p class="homeicon" @click="draw = !draw">
+      <svg viewBox="0 0 24 24">
+        <path :d="bcd" />
+      </svg>
+    </p>
+    <div class="draw" :class="{ open: draw }">
+      <ul>
+        <li>
+          <svg viewBox="0 0 24 24">
+            <path :d="home" />
+          </svg>
+          <span>home</span>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
@@ -73,9 +98,29 @@
   user-select: none;
 }
 
+.draw {
+  width: 20px;
+  height: 0px;
+  background-color: beige;
+  transition: height 1s ease-in-out, width 1.5s .6s ease-in-out;
+  /* transition: width 1.5s ease-in-out; */
+  overflow: hidden;
+}
+
+.draw.open {
+  height: 300px;
+  width: 200px;
+}
+
+
 .container {
   height: 100lvh;
   position: relative;
+}
+
+svg {
+  width: 1em;
+  height: 1em;
 }
 
 .rightside {
@@ -118,6 +163,17 @@
   margin: 20px;
   display: flex;
   justify-content: center;
+}
+
+.magni {
+  display: flex;
+  align-items: center;
+}
+
+.homeicon {}
+
+.magnify {
+  transform: translateX(-2em);
 }
 
 .search {
@@ -224,6 +280,29 @@ input[type="number"]::-webkit-inner-spin-button {
   height: 100lvh;
   width: 100lvw;
 }
+
+.homeicon {
+  width: 2em;
+  height: 2em;
+  background-color: teal;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  box-shadow: 0 3px 3px 1px lightgray;
+  cursor: pointer;
+  transition: opacity .3s ease-in;
+}
+
+.homeicon:hover {
+  opacity: .6;
+}
+
+.homeicon svg {
+  fill: white;
+  width: 1.2em;
+  height: 1.2em;
+}
 </style>
 
 <script setup>
@@ -252,4 +331,11 @@ onMounted((e) => {
     }
   })
 })
+
+import { mdiChevronRight, mdiMagnify, mdiHome, mdiBarcode } from '@mdi/js'
+const icr = mdiChevronRight
+const mag = mdiMagnify
+const home = mdiHome
+const bcd = mdiBarcode
+const draw = ref(false)
 </script>
