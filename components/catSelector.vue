@@ -1,14 +1,14 @@
 <template>
   <div>
     <div>
-      <p>input item</p>
-      <input type="text" v-model="input">
+      <p>アイテム検索</p>
+      <input type="text" v-model="input" placeholder="アイテムコード・名称でフィルター">
       <button @click="() => {
         resetValues()
       }">reset</button>
     </div>
 
-    <p>line</p>
+    <p>領域</p>
     <div class="selectContainer">
       <div v-for="content in lineList" :key="content" class="content" :class="{ active: selectedLine === content }"
         @click="() => {
@@ -21,7 +21,7 @@
         <p>{{ content }}</p>
       </div>
     </div>
-    <p>subline</p>
+    <p>ライン</p>
     <div class="selectContainer">
       <div v-for="content in subLineList" :key="content" class="content" :class="{ active: selectedSubLine === content }"
         @click="() => {
@@ -37,8 +37,8 @@
         <p>{{ content }}</p>
       </div>
     </div>
-    <p>item</p>
-    <div class="selectContainer">
+    <p>アイテム</p>
+    <div class="selectContainer" v-if="input || selectedSubLine">
       <div v-for="content in itemList" :key="content" class="content" :class="{ active: selectedItem === content }"
         @click="() => {
           // selectedLine = categoryList.filter((itm) => {
@@ -215,5 +215,10 @@ const selectItem = () => {
 .content.active {
   background-color: teal;
   color: white;
+}
+
+input {
+  padding: 5px;
+  width: 60%;
 }
 </style>

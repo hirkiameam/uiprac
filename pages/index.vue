@@ -6,23 +6,23 @@
       <div class="leftSide">
         <div class="inputBox">
           <label for="keyword">商品名</label>
-          <input type="search" id="keyword" />
+          <input type="search" id="keyword" placeholder="商品名・キーワード" ref="input" />
         </div>
         <div class="inputBox">
           <label for="oyaJan">親JAN</label>
-          <input type="search" id="oyaJan" />
+          <input type="search" id="oyaJan" placeholder="親JANコード" />
         </div>
         <div class="inputBox">
           <label for="brand">ブランド</label>
-          <input type="search" id="brand" />
+          <input type="search" id="brand" placeholder="ブランド名称" />
         </div>
         <div class="inputBox">
-          <label for="brand">取引先</label>
-          <input type="search" id="brand" />
+          <label for="torihikisaki">取引先</label>
+          <input type="search" id="torihikisaki" placeholder="取引先コード" />
         </div>
         <div class="inputBox">
           <label>基準商品区分</label>
-          <Selects @selected="selected(result, event)" Pname="kbn" class="selects"
+          <Selects @selected="selected($event, 1)" Pname="kbn" class="selects"
             :contentList="['全て', '一般', '必須', '基準', '過去基準']" />
         </div>
         <div class="inputBox">
@@ -43,25 +43,20 @@
         </div>
         <div class="inputBox between">
           <label for="keyword">登録日</label>
-          <input type="search" id="keyword" />
+          <input type="search" id="keyword" placeholder="yyyymmdd" />
           <span>〜</span>
-          <input type="search" id="keyword" />
+          <input type="search" id="keyword" placeholder="yyyymmdd" />
         </div>
-        <div class="inputBox between">
+        <div class=" inputBox between">
           <label for="keyword">売価</label>
-          <input type="search" id="keyword" />
+          <input type="search" id="keyword" placeholder="0" />
           <span>〜</span>
-          <input type="search" id="keyword" />
+          <input type="search" id="keyword" placeholder="0" />
         </div>
 
       </div>
       <div class="rightSide">
-        <p>LINE</p>
-        <Selects @selected="updateLine" :rowItemCount=4 class="selects" :contentList="lineList" />
-        <p>SUBLINE</p>
-        <Selects @selected="updateSubLine" :rowItemCount=4 class="selects" :contentList="sublineList" />
-        <p>ITEM</p>
-        <Selects @selected="updateItem" :rowItemCount=4 class="selects" :contentList="ItemList" />
+        <CatSelector />
       </div>
 
       <div class="submitFooter">
@@ -72,90 +67,14 @@
 </template>
 
 <script setup>
-const selected = (result, event) => {
-  console.log(result),
-    console.log(event)
+const selected = (result, num) => {
+  console.log(result)
+  console.log(num)
 }
-const updateLine = (result) => {
-  selectLine.value = result.v
-  selectSubLine.value = ''
-  selectItem.value = ''
-}
-const updateSubLine = (result) => {
-  selectSubLine.value = result.v
-}
-const updateItem = (result) => {
-  selectItem.value = result.v
-}
-const categoryList = [
-  { line: 1, Subline: 10, Item: 1000 },
-  { line: 1, Subline: 10, Item: 1001 },
-  { line: 1, Subline: 11, Item: 1002 },
-  { line: 1, Subline: 11, Item: 1003 },
-  { line: 1, Subline: 11, Item: 1004 },
-  { line: 1, Subline: 12, Item: 1005 },
-  { line: 1, Subline: 12, Item: 1006 },
-  { line: 1, Subline: 12, Item: 1007 },
-  { line: 1, Subline: 12, Item: 1008 },
-  { line: 1, Subline: 12, Item: 1009 },
-  { line: 2, Subline: 20, Item: 2000 },
-  { line: 2, Subline: 20, Item: 2001 },
-  { line: 2, Subline: 21, Item: 2002 },
-  { line: 2, Subline: 21, Item: 2003 },
-  { line: 2, Subline: 21, Item: 2004 },
-  { line: 2, Subline: 22, Item: 2005 },
-  { line: 2, Subline: 22, Item: 2006 },
-  { line: 2, Subline: 22, Item: 2007 },
-  { line: 2, Subline: 22, Item: 2008 },
-  { line: 2, Subline: 22, Item: 2009 },
-  { line: 4, Subline: 40, Item: 4000 },
-  { line: 4, Subline: 40, Item: 4001 },
-  { line: 4, Subline: 41, Item: 4002 },
-  { line: 4, Subline: 41, Item: 4003 },
-  { line: 4, Subline: 41, Item: 4004 },
-  { line: 4, Subline: 42, Item: 4005 },
-  { line: 4, Subline: 42, Item: 4006 },
-  { line: 4, Subline: 42, Item: 4007 },
-  { line: 4, Subline: 42, Item: 4008 },
-  { line: 4, Subline: 42, Item: 4009 },
-  { line: 3, Subline: 30, Item: 3000 },
-  { line: 3, Subline: 30, Item: 3001 },
-  { line: 3, Subline: 31, Item: 3002 },
-  { line: 3, Subline: 31, Item: 3003 },
-  { line: 3, Subline: 31, Item: 3004 },
-  { line: 3, Subline: 32, Item: 3005 },
-  { line: 3, Subline: 32, Item: 3006 },
-  { line: 3, Subline: 32, Item: 3007 },
-  { line: 3, Subline: 32, Item: 3008 },
-  { line: 3, Subline: 32, Item: 3009 },
-]
-
-const selectLine = ref(1)
-const selectSubLine = ref()
-const selectItem = ref()
-const lineList = computed(() => {
-  return Array.from(new Set(categoryList.map(itm => itm.line)))
-})
-const sublineList = computed(() => {
-  const filterItem = categoryList.filter((ct) => {
-    if (selectLine.value) {
-      return ct.line === selectLine.value
-    } else {
-      return true
-    }
-  })
-  return Array.from(new Set(filterItem.map(itm => itm.Subline)))
-})
-const ItemList = computed(() => {
-  const filterItem = categoryList.filter((ct) => {
-    if (selectSubLine.value) {
-      return ct.Subline === selectSubLine.value
-    } else {
-      return true
-    }
-  })
-  return Array.from(new Set(filterItem.map(itm => itm.Item)))
-})
+// const input = ref(null)
+// onMounted(() => {
+//   input.value.focus()
+// })
 </script>
 
 <style scoped>
@@ -186,7 +105,7 @@ const ItemList = computed(() => {
 }
 
 .rightSide {
-  background-color: aliceblue;
+  /* background-color: aliceblue; */
   max-width: 768px;
   width: 100%;
   padding: 20px;
