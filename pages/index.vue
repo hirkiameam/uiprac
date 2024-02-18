@@ -1,341 +1,223 @@
 <template>
   <div class="container">
-    <span>
-      <svg viewBox="0 0 24 24">
-        <path :d="icr" />
-      </svg>
-    </span>
-    <div class="transparent" v-if="!setVisible" @click="setVisible = true">
-    </div>
-    <div class="rightside">
-      <p class="set" @click="() => {
-        setVisible = !setVisible
-        inputFocus()
-      }">{{ store }}</p>
-      <div class="setWindow" :class="{ hidden: setVisible }">
-        <p>modify code</p>
-        <input id="inpId" :placeholder="store" type="number" @keydown="(e) => {
-          if (e.key === 'Enter') {
-            if (e.target.value !== '' && e.target.value.length === 3) {
-              store = e.target.value;
-              e.target.value = ''
-              setVisible = true
-              inputFocus()
-            }
-          }
-        }">
-      </div>
-    </div>
-    <div class="title">
-      <h1>
-        seach Example Sample
-      </h1>
-    </div>
-    <div class="selectChips">
-      <p @click="selectedchip = chip" :class="{ selected: selectedchip == chip }" v-for="chip in chipsValue">
-        {{ chip }}
-      </p>
-    </div>
-    <div class="searchbox">
-      <p class="magni">
-        <input @keydown="async (e) => {
-          if (e.key === 'Enter' && !e.isComposing) {
-            await navigateTo({
-              path: '/s/search',
-              query: {
-                w: input,
-                cat: selectedchip != 'all' ? selectedchip : undefined
-              }
-            })
-          }
-        }" v-model="input" type="search" class="search"
-          placeholder="input product code or search words then press enter">
-        <svg class="magnify" viewBox="0 0 24 24">
-          <path :d="mag" />
-        </svg>
-      </p>
-    </div>
-    <div class="functions">
-      <div class="func">
-        <div class="funcContent">
-          function1
+    <!-- <Selects label="領域" :contentList="['健康雑貨', 'バラエティ', '文具', '生活']" @selected="selected" Pname="a" />
+    <Selects label="区分" :contentList="['a', 'v', 'c', 'd', 'e', 'f', 'g']" @selected="selected" Pname="b" /> -->
+    <div class="contentWrapper">
+      <div class="leftSide">
+        <div class="inputBox">
+          <label for="keyword">商品名</label>
+          <input type="search" id="keyword" />
         </div>
-      </div>
-      <div class="func">
-        <div class="funcContent">
-          function2
+        <div class="inputBox">
+          <label for="oyaJan">親JAN</label>
+          <input type="search" id="oyaJan" />
         </div>
-      </div>
-      <div class="func">
-        <div class="funcContent">
-          function3
+        <div class="inputBox">
+          <label for="brand">ブランド</label>
+          <input type="search" id="brand" />
         </div>
+        <div class="inputBox">
+          <label for="brand">取引先</label>
+          <input type="search" id="brand" />
+        </div>
+        <div class="inputBox">
+          <label>基準商品区分</label>
+          <Selects @selected="selected(result, event)" Pname="kbn" class="selects"
+            :contentList="['全て', '一般', '必須', '基準', '過去基準']" />
+        </div>
+        <div class="inputBox">
+          <label>小型商品区分</label>
+          <Selects :rowItemCount=4 class="selects" :contentList="['全て', '-', '必須', '基準', '一般', 'オプション', '小型枠外']" />
+        </div>
+        <div class="inputBox">
+          <label>自動補充</label>
+          <Selects class="selects" :contentList="['全て', 'ON', 'OFF']" />
+        </div>
+        <div class="inputBox">
+          <label>認定外</label>
+          <Selects class="selects" :contentList="['全て', '認定枠内', '認定外', '認定外予定']" />
+        </div>
+        <div class="inputBox">
+          <label>自主開発区分</label>
+          <Selects :rowItemCount=7 class="selects" :contentList="['全て', 'なし', 'LF', 'LP', 'P限', 'N限', '海直']" />
+        </div>
+        <div class="inputBox between">
+          <label for="keyword">登録日</label>
+          <input type="search" id="keyword" />
+          <span>〜</span>
+          <input type="search" id="keyword" />
+        </div>
+        <div class="inputBox between">
+          <label for="keyword">売価</label>
+          <input type="search" id="keyword" />
+          <span>〜</span>
+          <input type="search" id="keyword" />
+        </div>
+
       </div>
-    </div>
-    <p class="homeicon" @click="draw = !draw">
-      <svg viewBox="0 0 24 24">
-        <path :d="bcd" />
-      </svg>
-    </p>
-    <div class="draw" :class="{ open: draw }">
-      <ul>
-        <li>
-          <svg viewBox="0 0 24 24">
-            <path :d="home" />
-          </svg>
-          <span>home</span>
-        </li>
-      </ul>
+      <div class="rightSide">
+        <p>LINE</p>
+        <Selects @selected="updateLine" :rowItemCount=4 class="selects" :contentList="lineList" />
+        <p>SUBLINE</p>
+        <Selects @selected="updateSubLine" :rowItemCount=4 class="selects" :contentList="sublineList" />
+        <p>ITEM</p>
+        <Selects @selected="updateItem" :rowItemCount=4 class="selects" :contentList="ItemList" />
+      </div>
+
+      <div class="submitFooter">
+        <button>検索</button>
+      </div>
     </div>
   </div>
 </template>
 
-<style scoped>
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
-  user-select: none;
-}
-
-.draw {
-  width: 20px;
-  height: 0px;
-  background-color: beige;
-  transition: height 1s ease-in-out, width 1.5s .6s ease-in-out;
-  /* transition: width 1.5s ease-in-out; */
-  overflow: hidden;
-}
-
-.draw.open {
-  height: 300px;
-  width: 200px;
-}
-
-
-.container {
-  height: 100lvh;
-  position: relative;
-}
-
-svg {
-  width: 1em;
-  height: 1em;
-}
-
-.rightside {
-  display: flex;
-  justify-content: right;
-  position: relative;
-}
-
-.title {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.selectChips {
-  display: flex;
-  justify-content: center;
-}
-
-.selectChips p {
-  font-size: 8px;
-  margin: .2em;
-  width: 8em;
-  background-color: #EEE;
-  padding: .5em;
-  text-align: center;
-  border-radius: 3em;
-  cursor: pointer;
-  transition: background-color .5s;
-}
-
-.selectChips p:hover {
-  background-color: rgb(194, 247, 229);
-}
-
-.selectChips p.selected {
-  background-color: aquamarine;
-}
-
-.searchbox {
-  margin: 20px;
-  display: flex;
-  justify-content: center;
-}
-
-.magni {
-  display: flex;
-  align-items: center;
-}
-
-.homeicon {}
-
-.magnify {
-  transform: translateX(-2em);
-}
-
-.search {
-  width: 95%;
-  max-width: 680px;
-  padding: 1em 2em;
-  border-radius: 2em;
-  border: 1px solid #999;
-}
-
-.search:hover {
-  background-color: azure;
-}
-
-.search:focus {
-  border: 2px solid teal;
-  outline: 4px solid rgb(121, 203, 203);
-}
-
-.functions {
-  margin: 0 auto;
-  width: 95%;
-  max-width: 680px;
-  display: flex;
-  justify-content: space-around;
-}
-
-.func {
-  margin: .3em;
-  border-radius: 1em;
-  width: 150px;
-  height: 150px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  transition: all .4s;
-}
-
-.func:hover {
-  background-color: RGBA(240, 240, 240, .5);
-  box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.1);
-}
-
-.func:active {
-  background-color: RGBA(240, 240, 240, .9);
-}
-
-.set {
-  text-align: center;
-  width: 4em;
-  height: 30px;
-  padding: .2em;
-  border-radius: 1em;
-  background-color: aliceblue;
-  cursor: pointer;
-  position: relative;
-  margin: 10px 20px 0 0;
-}
-
-.set:hover {
-  background-color: aquamarine;
-}
-
-.setWindow {
-  position: absolute;
-  top: 2.5em;
-  right: 0;
-  width: 200px;
-  height: 100px;
-  background-color: aliceblue;
-  border-radius: 1em;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  gap: .3em;
-  transition: opacity .3s ease;
-}
-
-.setWindow p {
-  margin-top: 7px;
-}
-
-.setWindow input {
-  text-align: center;
-  padding: .2em;
-  width: 5em;
-}
-
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-.setWindow.hidden {
-  opacity: 0;
-}
-
-.transparent {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 100lvh;
-  width: 100lvw;
-}
-
-.homeicon {
-  width: 2em;
-  height: 2em;
-  background-color: teal;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 50%;
-  box-shadow: 0 3px 3px 1px lightgray;
-  cursor: pointer;
-  transition: opacity .3s ease-in;
-}
-
-.homeicon:hover {
-  opacity: .6;
-}
-
-.homeicon svg {
-  fill: white;
-  width: 1.2em;
-  height: 1.2em;
-}
-</style>
-
 <script setup>
-
-const chipsValue = ['beauty', 'variety', 'stationary', 'housegoods', 'all']
-const selectedchip = ref('all')
-const input = ref('')
-const setVisible = ref(true)
-const store = ref('200')
-const inputFocus = () => {
-  if (!setVisible.value) {
-    document.getElementById('inpId').focus()
-  } else {
-    document.getElementById('inpId').blur()
-  }
+const selected = (result, event) => {
+  console.log(result),
+    console.log(event)
 }
-onMounted((e) => {
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && !setVisible.value) {
-      setVisible.value = true
-      inputFocus()
-    } else if (e.key === 's' && setVisible.value && e.target.nodeName != 'INPUT') {
-      setVisible.value = false
-      e.preventDefault()
-      inputFocus()
+const updateLine = (result) => {
+  selectLine.value = result.v
+  selectSubLine.value = ''
+  selectItem.value = ''
+}
+const updateSubLine = (result) => {
+  selectSubLine.value = result.v
+}
+const updateItem = (result) => {
+  selectItem.value = result.v
+}
+const categoryList = [
+  { line: 1, Subline: 10, Item: 1000 },
+  { line: 1, Subline: 10, Item: 1001 },
+  { line: 1, Subline: 11, Item: 1002 },
+  { line: 1, Subline: 11, Item: 1003 },
+  { line: 1, Subline: 11, Item: 1004 },
+  { line: 1, Subline: 12, Item: 1005 },
+  { line: 1, Subline: 12, Item: 1006 },
+  { line: 1, Subline: 12, Item: 1007 },
+  { line: 1, Subline: 12, Item: 1008 },
+  { line: 1, Subline: 12, Item: 1009 },
+  { line: 2, Subline: 20, Item: 2000 },
+  { line: 2, Subline: 20, Item: 2001 },
+  { line: 2, Subline: 21, Item: 2002 },
+  { line: 2, Subline: 21, Item: 2003 },
+  { line: 2, Subline: 21, Item: 2004 },
+  { line: 2, Subline: 22, Item: 2005 },
+  { line: 2, Subline: 22, Item: 2006 },
+  { line: 2, Subline: 22, Item: 2007 },
+  { line: 2, Subline: 22, Item: 2008 },
+  { line: 2, Subline: 22, Item: 2009 },
+  { line: 4, Subline: 40, Item: 4000 },
+  { line: 4, Subline: 40, Item: 4001 },
+  { line: 4, Subline: 41, Item: 4002 },
+  { line: 4, Subline: 41, Item: 4003 },
+  { line: 4, Subline: 41, Item: 4004 },
+  { line: 4, Subline: 42, Item: 4005 },
+  { line: 4, Subline: 42, Item: 4006 },
+  { line: 4, Subline: 42, Item: 4007 },
+  { line: 4, Subline: 42, Item: 4008 },
+  { line: 4, Subline: 42, Item: 4009 },
+  { line: 3, Subline: 30, Item: 3000 },
+  { line: 3, Subline: 30, Item: 3001 },
+  { line: 3, Subline: 31, Item: 3002 },
+  { line: 3, Subline: 31, Item: 3003 },
+  { line: 3, Subline: 31, Item: 3004 },
+  { line: 3, Subline: 32, Item: 3005 },
+  { line: 3, Subline: 32, Item: 3006 },
+  { line: 3, Subline: 32, Item: 3007 },
+  { line: 3, Subline: 32, Item: 3008 },
+  { line: 3, Subline: 32, Item: 3009 },
+]
+
+const selectLine = ref(1)
+const selectSubLine = ref()
+const selectItem = ref()
+const lineList = computed(() => {
+  return Array.from(new Set(categoryList.map(itm => itm.line)))
+})
+const sublineList = computed(() => {
+  const filterItem = categoryList.filter((ct) => {
+    if (selectLine.value) {
+      return ct.line === selectLine.value
+    } else {
+      return true
     }
   })
+  return Array.from(new Set(filterItem.map(itm => itm.Subline)))
 })
-
-import { mdiChevronRight, mdiMagnify, mdiHome, mdiBarcode } from '@mdi/js'
-const icr = mdiChevronRight
-const mag = mdiMagnify
-const home = mdiHome
-const bcd = mdiBarcode
-const draw = ref(false)
+const ItemList = computed(() => {
+  const filterItem = categoryList.filter((ct) => {
+    if (selectSubLine.value) {
+      return ct.Subline === selectSubLine.value
+    } else {
+      return true
+    }
+  })
+  return Array.from(new Set(filterItem.map(itm => itm.Item)))
+})
 </script>
+
+<style scoped>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.container {
+  width: 500px;
+
+}
+
+.contentWrapper {
+  width: 100vw;
+  height: 300px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  position: relative;
+}
+
+.leftSide {
+  max-width: 768px;
+  width: 100%;
+  padding: 20px;
+}
+
+.rightSide {
+  background-color: aliceblue;
+  max-width: 768px;
+  width: 100%;
+  padding: 20px;
+  padding-bottom: 120px;
+}
+
+.submitFooter {
+  color: white;
+  position: fixed;
+  right: 10px;
+  bottom: 10px;
+}
+
+.inputBox {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+}
+
+.inputBox label {
+  min-width: 10em;
+  padding: 0 10px;
+}
+
+.inputBox input {
+  padding: 5px;
+  width: 60%;
+}
+
+.between input {
+  width: 9em;
+
+}
+</style>

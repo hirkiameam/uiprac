@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev --host",
+    "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
@@ -15,6 +15,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.6",
     "@mdi/js": "^7.4.47",
     "nuxt": "^3.10.1",
+    "quagga": "^0.12.1",
     "vue": "^3.4.15",
     "vue-router": "^4.2.5"
   }
