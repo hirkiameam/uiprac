@@ -1,14 +1,14 @@
 
 <template>
     <div class="container">
-            <div class="resultLink">
-                <h1>result:{{ finalresult }}</h1>
-                <h1>{{ resultList.length }}</h1>
+        <div class="resultLink">
+            <h1>result:{{ finalresult }}</h1>
+            <h1>{{ resultList.length }}</h1>
+        </div>
+        <div id="my_container">
+            <div id="my_quagga">
             </div>
-            <div id="my_container">
-                <div id="my_quagga">
-                </div>
-            </div>
+        </div>
         <div>
             <button @click="startscan()">start</button>
             <button @click="stopscan()">stop</button>
@@ -58,7 +58,7 @@ const startscan = (() => {
         console.log(result.codeResult);
         let r = result.codeResult.code
         resultList.value.push(r)
-        if(resultList.value.length>10){
+        if (resultList.value.length > 10) {
             // stopscan()
             calculateResult()
         }
@@ -69,20 +69,20 @@ const stopscan = () => {
     console.log("Stop!!");
     Quagga.stop();
 }
-const calculateResult = () =>{
-        let countList = []
-        let uniqueCode = new Set(resultList.value)
-        uniqueCode.forEach((cd)=>{
-            let r2 = resultList.value.filter((itm)=>{
-                return cd == itm
-            })
-            let returnObj = {code:cd,count:r2.length}
-            countList.push(returnObj)
+const calculateResult = () => {
+    let countList = []
+    let uniqueCode = new Set(resultList.value)
+    uniqueCode.forEach((cd) => {
+        let r2 = resultList.value.filter((itm) => {
+            return cd == itm
         })
-        countList.sort((a,b)=>(a.count > b.count? -1:1))
-        finalresult.value = countList[0].code
-        resultList.value = []
-    }
+        let returnObj = { code: cd, count: r2.length }
+        countList.push(returnObj)
+    })
+    countList.sort((a, b) => (a.count > b.count ? -1 : 1))
+    finalresult.value = countList[0].code
+    resultList.value = []
+}
 
 const finalresult = ref()
 const resultList = ref([])
@@ -133,5 +133,16 @@ const resultList = ref([])
 
 .read {
     background-color: lightgreen;
+}
+
+#my_quagga>video,
+#my_quagga>canvas {
+    width: 100%;
+}
+
+#my_quagga>canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 </style>
